@@ -73,6 +73,9 @@
 								<option value="sparql">
 									SPARQL endpoint proxy
 								</option>
+								<option value="native-linked-data">
+									Native Java Store with Linked-Data support
+								</option>
 								<option value="federate">Federation Store</option>
 							</select>
 						</td>
