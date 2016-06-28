@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.memory.config;
 
+import static org.eclipse.rdf4j.sail.memory.config.MemoryStoreSchema.EVALUATION_STRATEGY_FACTORY;
 import static org.eclipse.rdf4j.sail.memory.config.MemoryStoreSchema.PERSIST;
 import static org.eclipse.rdf4j.sail.memory.config.MemoryStoreSchema.SYNC_DELAY;
 
