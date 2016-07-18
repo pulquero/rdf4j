@@ -9,6 +9,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.sail.lucene.AbstractLuceneSailSPARQLTest;
+import org.eclipse.rdf4j.sail.lucene.AbstractMockFunctionTest;
 import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.After;
@@ -16,7 +17,7 @@ import org.junit.After;
 /**
  * @author Jacek Grzebyta
  */
-public class ElasticsearchMockFunctionTest extends AbstractLuceneSailSPARQLTest {
+public class ElasticsearchMockFunctionTest extends AbstractMockFunctionTest {
 
 	private static final String DATA_DIR = "target/test-data";
 
