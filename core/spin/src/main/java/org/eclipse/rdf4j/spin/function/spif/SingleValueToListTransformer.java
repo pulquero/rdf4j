@@ -14,12 +14,12 @@ import java.util.List;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
-class SingleValueToListTransformer<E> implements Function<E, List<? extends E>> {
+public class SingleValueToListTransformer<E> implements Function<E, List<? extends E>> {
 
 	private static final SingleValueToListTransformer<?> INSTANCE = new SingleValueToListTransformer<Object>();
 
 	@SuppressWarnings("unchecked")
-	static <E> Iterator<List<? extends E>> transform(Iterator<E> iter) {
+	public static <E> Iterator<List<? extends E>> transform(Iterator<E> iter) {
 		return Iterators.transform(iter, (SingleValueToListTransformer<E>)INSTANCE);
 	}
 
