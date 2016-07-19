@@ -126,11 +126,14 @@ public class TupleFunctionEvaluationStrategy implements EvaluationStrategy {
 				if (iter.hasNext()) {
 					resultBindings = new QueryBindingSet(bindings);
 					List<? extends Value> values = iter.next();
-					if (resultVars.size() != values.size()) {
-						throw new QueryEvaluationException(
-								"Incorrect number of result vars: require " + values.size());
-					}
-					for (int i = 0; i < values.size(); i++) {
+
+					// Binding results to vars due to resultVars
+					/*
+					 * if (resultVars.size() != values.size()) { throw new QueryEvaluationException(
+					 * "Incorrect number of result vars: require " + values.size()); }
+					 */
+
+					for (int i = 0; i < resultVars.size(); i++) {
 						Value result = values.get(i);
 						Var resultVar = resultVars.get(i);
 						Value varValue = resultVar.getValue();
@@ -146,6 +149,16 @@ public class TupleFunctionEvaluationStrategy implements EvaluationStrategy {
 							break;
 						}
 					}
+
+					/*
+					 * for (int i = 0; i < values.size(); i++) { Value result = values.get(i); Var resultVar =
+					 * resultVars.get(i); Value varValue = resultVar.getValue(); String varName =
+					 * resultVar.getName(); Value boundValue = bindings.getValue(varName); if ((varValue ==
+					 * null || result.equals(varValue)) && (boundValue == null || result.equals(boundValue)))
+					 * { resultBindings.addBinding(varName, result); } else { resultBindings = null; break; }
+					 * }
+					 */
+
 				}
 				else {
 					resultBindings = null;

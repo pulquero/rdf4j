@@ -15,6 +15,7 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -30,7 +31,6 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.spin.SpinSail;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,13 +92,12 @@ public abstract class AbstractMockFunctionTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSimpleCase()
 		throws Exception
 	{
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("select * where {\n");
-		buffer.append("  ?pred <" + MockFunction.REQUEST_PROPERTY + "> (\"Foo\" \"Testmessage\")\n");
+		buffer.append("  ?pred <" + MockFunction.TEST1_PROPERTY + "> (\"Foo\" \"Testmessage\")\n");
 		buffer.append("}");
 		log.info("Request \n{}\n", buffer.toString());
 		try {
@@ -117,13 +116,60 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test
-	public void testwithMockFunction()
+	public void testMultipleReturn1()
 		throws Exception
 	{
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("select * where {\n");
-		buffer.append("  ?pred <" + MockFunction.REQUEST_PROPERTY + "> ([ <" + MockFunction.VALUE_PROPERTY
-				+ "> \"test\" ] \"Testmessage\")\n");
+		buffer.append("  ?pred <" + MockFunction.TEST2_PROPERTY + "> (\"berry\")\n");
+		buffer.append("}");
+		log.info("Request \n{}\n", buffer.toString());
+		try {
+			connection.begin();
+
+			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());
+			printTupleResult(query);
+		}
+		catch (Exception e) {
+			connection.rollback();
+			throw e;
+		}
+		finally {
+			connection.commit();
+		}
+	}
+
+	@Test(expected = QueryEvaluationException.class)
+	public void testMultipleReturn1a()
+		throws Exception
+	{
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("select * where {\n");
+		buffer.append("  ?pred <" + MockFunction.TEST2_PROPERTY + "> (\"berry\" \"very\")\n");
+		buffer.append("}");
+		log.info("Request \n{}\n", buffer.toString());
+		try {
+			connection.begin();
+
+			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());
+			printTupleResult(query);
+		}
+		catch (Exception e) {
+			connection.rollback();
+			throw e;
+		}
+		finally {
+			connection.commit();
+		}
+	}
+
+	@Test
+	public void testMultipleReturn2()
+		throws Exception
+	{
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("select ?pred ?length where {\n");
+		buffer.append("  (?pred ?length) <" + MockFunction.TEST2_PROPERTY + "> (\"berry\")\n");
 		buffer.append("}");
 		log.info("Request \n{}\n", buffer.toString());
 		try {

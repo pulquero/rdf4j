@@ -13,9 +13,6 @@ import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.After;
 
-/**
- * @author Jacek Grzebyta
- */
 public class ElasticsearchSailSPARQLTest extends AbstractLuceneSailSPARQLTest {
 
 	private static final String DATA_DIR = "target/test-data";

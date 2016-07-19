@@ -7,6 +7,7 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.lucene;
 
+import static org.eclipse.rdf4j.model.vocabulary.APF.STR_SPLIT;
 import static org.eclipse.rdf4j.sail.lucene.LuceneSailSchema.MATCHES;
 import static org.eclipse.rdf4j.sail.lucene.LuceneSailSchema.QUERY;
 import static org.eclipse.rdf4j.sail.lucene.LuceneSailSchema.SCORE;
@@ -30,6 +31,7 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.turtle.TurtleWriter;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.sail.spin.SpinSail;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,7 +42,6 @@ import org.slf4j.LoggerFactory;
 /**
  * This test class reproduces errors described in issues #220 and #235.
  * 
- * @author Jacek Grzebyta
  * @see <a href="https://github.com/eclipse/rdf4j/issues/220">issue #220</a>
  * @see <a href="https://github.com/eclipse/rdf4j/issues/235">issue #235</a>
  */
@@ -60,10 +61,13 @@ public abstract class AbstractLuceneSailSPARQLTest {
 		// load data into memory store
 		MemoryStore store = new MemoryStore();
 
+		// add Support for SPIN function
+		SpinSail spin = new SpinSail(store);
+
 		// prepare sLucene wrapper
 		LuceneSail sail = new LuceneSail();
 		configure(sail);
-		sail.setBaseSail(store);
+		sail.setBaseSail(spin);
 		repository = new SailRepository(sail);
 		repository.initialize();
 
@@ -117,6 +121,22 @@ public abstract class AbstractLuceneSailSPARQLTest {
 		finally {
 			connection.commit();
 		}
+	}
+
+	@Test
+	public void testStrSplit()
+		throws Exception
+	{
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("select * where {\n");
+		buffer.append(
+				"  ?var <" + STR_SPLIT + "> (\"We published two new milestone builds today\" \"\\\\s\") .\n");
+		buffer.append("}\n");
+
+		log.info("Sparql query: \n{}\n", buffer.toString());
+
+		TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());
+		printTupleResult(query);
 	}
 
 	/**
