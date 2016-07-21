@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 /**
  * That function returns back all passed arguments.
  * 
- * @author jacek
+ * @author github.com:jgrzebyta
  */
 public class Test1Function implements InverseMagicProperty {
 

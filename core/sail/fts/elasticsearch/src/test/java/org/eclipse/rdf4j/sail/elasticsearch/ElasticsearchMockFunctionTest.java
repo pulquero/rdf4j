@@ -15,7 +15,7 @@ import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.After;
 
 /**
- * @author Jacek Grzebyta
+ * @author github.com:jgrzebyta
  */
 public class ElasticsearchMockFunctionTest extends AbstractMockFunctionTest {
 

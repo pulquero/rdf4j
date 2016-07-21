@@ -10,6 +10,9 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
+/**
+ * @author github.com:jgrzebyta
+ */
 public class Function2Transformer implements Function<Value, List<Value>> {
 
 	private static SimpleValueFactory vf = SimpleValueFactory.getInstance();

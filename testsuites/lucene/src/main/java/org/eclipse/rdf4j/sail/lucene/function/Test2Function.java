@@ -16,6 +16,8 @@ import org.eclipse.rdf4j.spin.function.InverseMagicProperty;
 /**
  * That class returns a list where first argument is the input word with all capitalised letters and second
  * argument is length of the word.
+ * 
+ * @author github.com:jgrzebyta
  */
 public class Test2Function implements InverseMagicProperty {
 

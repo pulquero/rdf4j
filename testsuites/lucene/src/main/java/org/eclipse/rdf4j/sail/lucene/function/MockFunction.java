@@ -5,7 +5,7 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
- * Some Mock function. It just prints arguments.
+ * Vocabulary for the mock functions.
  */
 public class MockFunction {
 
