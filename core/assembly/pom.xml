@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.eclipse.rdf4j</groupId>
 		<artifactId>rdf4j-core</artifactId>
-		<version>2.0-SNAPSHOT</version>
+		<version>2.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>rdf4j-assembly</artifactId>
@@ -295,6 +295,18 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+									<resource>edl-v1.0.txt</resource>
+									<file>../../edl-v1.0.txt</file>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+									<resource>notice.md</resource>
+									<file>../../notice.md</file>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+									<resource>about.md</resource>
+									<file>../../about.md</file>
+								</transformer>
 							</transformers>
 						</configuration>
 						<executions>
