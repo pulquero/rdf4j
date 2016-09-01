@@ -11,6 +11,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
 /**
+ * Transforms a string value to list: [<string_upper_cases>, <string_length>].
+ * 
  * @author github.com:jgrzebyta
  */
 public class Function2Transformer implements Function<Value, List<Value>> {
