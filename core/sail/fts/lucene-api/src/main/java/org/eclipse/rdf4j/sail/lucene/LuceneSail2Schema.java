@@ -12,7 +12,7 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
- * New namespace for <code>search</code> function in the LuceneSail repository. <br/>
+ * New namespace for new <code>Lucene</code> functions in the LuceneSail repository. <br/>
  * <p>
  * <code>search:search(query, subject, propertyPredicate, property, scorePredicate, snippetPredicate) [functional,
  * not spin syntax]</code><br/>
@@ -41,12 +41,11 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
  * </p>
  * 
  * @author Mark Hale
- * @author githu.com/jgrzebyta
- * @from 2.0
+ * @author github.com/jgrzebyta
  */
 public class LuceneSail2Schema {
 
-	public static final String NAMESPACE = "http://rdf4j.org/contrib/LuceneSail2";
+	public static final String NAMESPACE = "http://rdf4j.org/contrib/LuceneSail2/";
 
 	public static final IRI SEARCH;
 
