@@ -18,8 +18,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
@@ -30,6 +32,7 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.algebra.evaluation.function.TupleFunction;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.sail.NotifyingSailConnection;
@@ -251,15 +254,44 @@ public class LuceneSail extends NotifyingSailWrapper {
 	public static final String INCOMPLETE_QUERY_FAIL_KEY = "incompletequeryfail";
 
 	/**
+	 * Set this key to "false" to disable late evaluation of search queries.
+	 */
+	public static final String EVALUATION_MODE_KEY = "evaluationMode";
+
+	/**
+	 * Eagerly evaluates any search queries and then delegates to the base SAIL.
+	 */
+	public static final String EAGER_EVALUATION_MODE = "eager";
+
+	/**
+	 * Uses the base SAIL along with an embedded SERVICE to perform query evaluation. The SERVICE is used to
+	 * evaluate extended query algebra nodes such as {@link TupleFunction}s.
+	 */
+	public static final String SERVICE_EVALUATION_MODE = "service";
+
+	/**
+	 * Assumes the base SAIL supports an extended query algebra (e.g. {@link TupleFunction}s) and use it to
+	 * perform all query evaluation.
+	 */
+	public static final String NATIVE_EVALUATION_MODE = "native";
+
+	/**
+	 * Treats the base SAIL as a simple triple source and all the query evaluation is performed by this SAIL.
+	 */
+	public static final String TRIPLE_SOURCE_EVALUATION_MODE = "tripleSource";
+
+	/**
 	 * The LuceneIndex holding the indexed literals.
 	 */
-	private SearchIndex luceneIndex;
+	private volatile SearchIndex luceneIndex;
 
 	protected final Properties parameters = new Properties();
 
-	private String reindexQuery = "SELECT ?s ?p ?o ?c WHERE {{?s ?p ?o} UNION {GRAPH ?c {?s ?p ?o.}}} ORDER BY ?s";
+	private volatile String reindexQuery = "SELECT ?s ?p ?o ?c WHERE {{?s ?p ?o} UNION {GRAPH ?c {?s ?p ?o.}}} ORDER BY ?s";
 
-	private boolean incompleteQueryFails = true;
+	private volatile boolean incompleteQueryFails = true;
+
+	private volatile String evaluationMode = TRIPLE_SOURCE_EVALUATION_MODE;
 
 	private Set<IRI> indexedFields;
 
@@ -267,6 +299,8 @@ public class LuceneSail extends NotifyingSailWrapper {
 
 	private IndexableStatementFilter filter = null;
 
+	private final AtomicBoolean closed = new AtomicBoolean(false);
+	
 	public void setLuceneIndex(SearchIndex luceneIndex) {
 		this.luceneIndex = luceneIndex;
 	}
@@ -286,18 +320,22 @@ public class LuceneSail extends NotifyingSailWrapper {
 	public void shutDown()
 		throws SailException
 	{
-		try {
-			if (luceneIndex != null) {
-				luceneIndex.shutDown();
+		if(closed.compareAndSet(false, true)) {
+			try {
+				SearchIndex toShutDownLuceneIndex = luceneIndex;
+				luceneIndex = null;
+				if (toShutDownLuceneIndex != null) {
+					toShutDownLuceneIndex.shutDown();
+				}
 			}
-		}
-		catch (IOException e) {
-			throw new SailException(e);
-		}
-		finally {
-			// ensure that super is also invoked when the LuceneIndex causes an
-			// IOException
-			super.shutDown();
+			catch (IOException e) {
+				throw new SailException(e);
+			}
+			finally {
+				// ensure that super is also invoked when the LuceneIndex causes an
+				// IOException
+				super.shutDown();
+			}
 		}
 	}
 
@@ -343,6 +381,8 @@ public class LuceneSail extends NotifyingSailWrapper {
 			if (parameters.containsKey(INCOMPLETE_QUERY_FAIL_KEY))
 				setIncompleteQueryFails(
 						Boolean.parseBoolean(parameters.getProperty(INCOMPLETE_QUERY_FAIL_KEY)));
+			if (parameters.containsKey(EVALUATION_MODE_KEY))
+				setEvaluationMode(parameters.getProperty(EVALUATION_MODE_KEY));
 			if (luceneIndex == null) {
 				initializeLuceneIndex();
 			}
@@ -409,6 +449,22 @@ public class LuceneSail extends NotifyingSailWrapper {
 	public void setIncompleteQueryFails(boolean incompleteQueryFails) {
 		this.setParameter(INCOMPLETE_QUERY_FAIL_KEY, Boolean.toString(incompleteQueryFails));
 		this.incompleteQueryFails = incompleteQueryFails;
+	}
+
+	/**
+	 * See EVALUATION_MODE_KEY parameter.
+	 */
+	public String getEvaluationMode() {
+		return evaluationMode;
+	}
+
+	/**
+	 * See EVALUATION_MODE_KEY parameter.
+	 */
+	public void setEvaluationMode(String mode) {
+		Objects.requireNonNull(mode);
+		this.setParameter(EVALUATION_MODE_KEY, mode);
+		this.evaluationMode = mode;
 	}
 
 	/**
@@ -492,31 +548,38 @@ public class LuceneSail extends NotifyingSailWrapper {
 	}
 
 	protected boolean acceptStatementToIndex(Statement s) {
-		return (filter != null) ? filter.accept(s) : true;
+		IndexableStatementFilter nextFilter = filter;
+		return (nextFilter != null) ? nextFilter.accept(s) : true;
 	}
 
 	public Statement mapStatement(Statement statement) {
 		IRI p = statement.getPredicate();
 		boolean predicateChanged = false;
-		if (indexedFieldsMapping != null) {
-			IRI res = indexedFieldsMapping.get(p);
+		Map<IRI, IRI> nextIndexedFieldsMapping = indexedFieldsMapping;
+		if (nextIndexedFieldsMapping != null) {
+			IRI res = nextIndexedFieldsMapping.get(p);
 			if (res != null) {
 				p = res;
 				predicateChanged = true;
 			}
 		}
-		if (this.indexedFields != null && !this.indexedFields.contains(p))
+		Set<IRI> nextIndexedFields = indexedFields;
+		if (nextIndexedFields != null && !nextIndexedFields.contains(p)) {
 			return null;
+		}
 
-		if (predicateChanged)
+		if (predicateChanged) {
 			return getValueFactory().createStatement(statement.getSubject(), p, statement.getObject(),
 					statement.getContext());
-		else
+		}
+		else {
 			return statement;
+		}
 	}
 
 	protected Collection<SearchQueryInterpreter> getSearchQueryInterpreters() {
-		return Arrays.<SearchQueryInterpreter> asList(new QuerySpecBuilder(incompleteQueryFails),
+		return Arrays.<SearchQueryInterpreter> asList(
+				new QuerySpecBuilder(incompleteQueryFails, evaluationMode),
 				new DistanceQuerySpecBuilder(luceneIndex), new GeoRelationQuerySpecBuilder(luceneIndex));
 	}
 }
