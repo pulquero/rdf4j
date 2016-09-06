@@ -9,6 +9,3 @@ org.eclipse.rdf4j.spin.function.apf.ConcatTupleFunction
 org.eclipse.rdf4j.spin.function.list.Member
 org.eclipse.rdf4j.spin.function.list.Index
 org.eclipse.rdf4j.spin.function.list.Length
-
-#lucene function
-org.eclipse.rdf4j.spin.function.sail.LuceneSearch
