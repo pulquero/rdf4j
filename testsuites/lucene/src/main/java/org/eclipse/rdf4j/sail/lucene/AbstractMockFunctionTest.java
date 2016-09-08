@@ -30,7 +30,9 @@ import org.eclipse.rdf4j.sail.lucene.function.MockFunction;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.spin.SpinSail;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +56,16 @@ public abstract class AbstractMockFunctionTest {
 		// load data into memory store
 		MemoryStore store = new MemoryStore();
 
+		// prepare sLucene wrapper
+		// LuceneSail sail = new LuceneSail();
+		//configure(sail);
+		//sail.setBaseSail(store);
+
 		// add Support for SPIN function
+		//SpinSail spin = new SpinSail(sail);
 		SpinSail spin = new SpinSail(store);
 
-		// prepare sLucene wrapper
-		LuceneSail sail = new LuceneSail();
-		configure(sail);
-		sail.setBaseSail(spin);
-		repository = new SailRepository(sail);
+		repository = new SailRepository(spin);
 		repository.initialize();
 
 		connection = repository.getConnection();
@@ -104,6 +108,11 @@ public abstract class AbstractMockFunctionTest {
 			connection.begin();
 
 			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());
+			try (TupleQueryResult results = query.evaluate()) {
+				int count = Iterations.asList(results).size();
+				Assert.assertTrue(count > 0);
+				log.info("**** Number of results: {}", count);
+			}
 			printTupleResult(query);
 		}
 		catch (Exception e) {
@@ -116,6 +125,7 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test
+	@Ignore
 	public void testMultipleReturn1()
 		throws Exception
 	{
@@ -140,6 +150,7 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test(expected = QueryEvaluationException.class)
+	@Ignore
 	public void testMultipleReturn1a()
 		throws Exception
 	{
@@ -164,6 +175,7 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test
+	@Ignore
 	public void testMultipleReturn2()
 		throws Exception
 	{
@@ -176,6 +188,12 @@ public abstract class AbstractMockFunctionTest {
 			connection.begin();
 
 			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());
+			try (TupleQueryResult results = query.evaluate()) {
+				int count = Iterations.asList(results).size();
+				Assert.assertTrue(count > 0);
+				log.info("Number of results: {}", count);
+			}
+			// logging
 			printTupleResult(query);
 		}
 		catch (Exception e) {

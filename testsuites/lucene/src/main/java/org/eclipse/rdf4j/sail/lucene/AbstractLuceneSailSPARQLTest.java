@@ -7,7 +7,6 @@
  *******************************************************************************/
 package org.eclipse.rdf4j.sail.lucene;
 
-import static org.eclipse.rdf4j.model.vocabulary.APF.STR_SPLIT;
 import static org.eclipse.rdf4j.sail.lucene.LuceneSailSchema.MATCHES;
 import static org.eclipse.rdf4j.sail.lucene.LuceneSailSchema.QUERY;
 import static org.eclipse.rdf4j.sail.lucene.LuceneSailSchema.SCORE;
@@ -94,7 +93,7 @@ public abstract class AbstractLuceneSailSPARQLTest {
 		throws Exception;
 
 	/**
-	 * Negative control test: ie valid SPARQL query
+	 * Positive control test: ie valid SPARQL query
 	 * 
 	 * @throws Exception
 	 */
@@ -121,22 +120,6 @@ public abstract class AbstractLuceneSailSPARQLTest {
 		finally {
 			connection.commit();
 		}
-	}
-
-	@Test
-	public void testStrSplit()
-		throws Exception
-	{
-		StringBuilder buffer = new StringBuilder();
-		buffer.append("select * where {\n");
-		buffer.append(
-				"  ?var <" + STR_SPLIT + "> (\"We published two new milestone builds today\" \"\\\\s\") .\n");
-		buffer.append("}\n");
-
-		log.info("Sparql query: \n{}\n", buffer.toString());
-
-		TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());
-		printTupleResult(query);
 	}
 
 	/**
@@ -290,8 +273,8 @@ public abstract class AbstractLuceneSailSPARQLTest {
 			 * String(resultoutput.toByteArray()));
 			 */
 			/*
-			 * try (TupleQueryResult res = query.evaluate()) { int count = countTupleResults(res);
-			 * log.info("count statements: {}", count); Assert.assertTrue(count == 2); }
+			 * try (TupleQueryResult res = query.evaluate()) { int count = countTupleResults(res); log.info(
+			 * "count statements: {}", count); Assert.assertTrue(count == 2); }
 			 */
 		}
 		catch (Exception e) {
