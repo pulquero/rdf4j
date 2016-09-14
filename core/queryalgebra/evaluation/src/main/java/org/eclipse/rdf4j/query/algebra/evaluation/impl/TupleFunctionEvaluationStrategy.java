@@ -91,8 +91,8 @@ public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 			public BindingSet getNextElement()
 				throws QueryEvaluationException
 			{
-				QueryBindingSet resultBindings;
-				if (iter.hasNext()) {
+				QueryBindingSet resultBindings = null;
+				while (resultBindings == null && iter.hasNext()) {
 					resultBindings = new QueryBindingSet(bindings);
 					List<? extends Value> values = iter.next();
 
@@ -128,9 +128,6 @@ public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 					 * }
 					 */
 
-				}
-				else {
-					resultBindings = null;
 				}
 				return resultBindings;
 			}
