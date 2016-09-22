@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -185,20 +186,20 @@ public abstract class AbstractLuceneSailSPARQLTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected = QueryEvaluationException.class)
 	public void test220Issue()
 		throws Exception
 	{
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("select ?pred ?score ?query ?id where {\n");
-		buffer.append("  bind(str(\"Abf1\") as ?query) .");
+		buffer.append("  bind(str(\"Abf1\") as ?query) .\n");
 		buffer.append("  ?pred <" + MATCHES + "> [\n");
 		buffer.append("    <" + QUERY + ">  " + " ?query ;\n");
 		buffer.append("    <" + SCORE + "> ?score \n");
 		buffer.append("  ] .\n");
 		buffer.append("  ?pred <urn:raw:yeastract#Yeast_id> ?id .\n");
 		buffer.append("}\n");
-		log.info("Request query: \n{}\n", buffer.toString());
+		log.info("Request query: \n==================\n{}\n=======================\n", buffer.toString());
 
 		try {
 			connection.begin();
@@ -264,7 +265,8 @@ public abstract class AbstractLuceneSailSPARQLTest {
 			printGraphResult(query);
 			try (GraphQueryResult res = query.evaluate()) {
 				int cnt = countGraphResults(res);
-				Assert.assertTrue(String.format("count triples: ", cnt), cnt == 2);
+				log.info("+++++    count triples: {}", cnt);
+				Assert.assertTrue(String.format("count triples: {}", cnt), cnt == 2);
 			}
 			/*
 			 * TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, buffer.toString());

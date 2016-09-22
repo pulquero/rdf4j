@@ -155,7 +155,7 @@ public abstract class AbstractFunctionLuceneSailSPARQLTest {
 				"  (?pred ?score) <" + SEARCH + "> (\"Abf1\" <" + ALL_MATCHES + "> <" + SCORE + ">) . \n");
 		buffer.append("  ?pred <urn:raw:yeastract#Yeast_id> ?id .\n");
 		buffer.append("}\n");
-		log.info("Request query: \n{}\n", buffer.toString());
+		log.info("Request query: \n====================\n{}\n======================\n", buffer.toString());
 
 		try {
 			connection.begin();
@@ -196,12 +196,12 @@ public abstract class AbstractFunctionLuceneSailSPARQLTest {
 	{
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("select ?pred ?score ?query ?id where {\n");
-		buffer.append("  bind(str(\"Abf1\") as ?query) .");
+		buffer.append("  bind(str(\"Abf1\") as ?query) .\n");
 		buffer.append(
 				"  (?pred ?score) <" + SEARCH + "> (?query <" + ALL_MATCHES + "> <" + SCORE + ">) . \n");
 		buffer.append("  ?pred <urn:raw:yeastract#Yeast_id> ?id .\n");
 		buffer.append("}\n");
-		log.info("Request query: \n{}\n", buffer.toString());
+		log.info("Request query: \n====================\n{}\n======================\n", buffer.toString());
 
 		try {
 			connection.begin();
@@ -253,7 +253,7 @@ public abstract class AbstractFunctionLuceneSailSPARQLTest {
 		buffer.append("  ?pred <urn:raw:yeastract#Yeast_id> ?id .\n");
 		buffer.append("  bind(str(?id) as ?id2)\n");
 		buffer.append(" }");
-		log.info("Request query: \n{}\n", buffer.toString());
+		log.info("Request query: \n====================\n{}\n======================\n", buffer.toString());
 
 		try {
 			connection.begin();
