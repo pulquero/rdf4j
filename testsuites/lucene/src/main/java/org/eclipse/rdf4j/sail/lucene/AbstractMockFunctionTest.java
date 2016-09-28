@@ -32,7 +32,6 @@ import org.eclipse.rdf4j.sail.spin.SpinSail;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +94,6 @@ public abstract class AbstractMockFunctionTest {
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore
 	public void testSimpleCase()
 		throws Exception
 	{
@@ -126,7 +124,6 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test
-	@Ignore
 	public void testMultipleReturn1()
 		throws Exception
 	{
@@ -151,7 +148,6 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test(expected = QueryEvaluationException.class)
-	@Ignore
 	public void testMultipleReturn1a()
 		throws Exception
 	{
