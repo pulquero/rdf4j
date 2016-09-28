@@ -333,6 +333,7 @@ public class LuceneSailConnection extends NotifyingSailConnectionWrapper {
 			interpreter.process(tupleExpr, bindings, queries);
 		}
 
+		logger.trace("Evaluation mode: {}", sail.getEvaluationMode());
 		if (LuceneSail.EAGER_EVALUATION_MODE.equals(sail.getEvaluationMode())) {
 			// evaluate lucene queries
 			if (!queries.isEmpty()) {
@@ -367,6 +368,7 @@ public class LuceneSailConnection extends NotifyingSailConnectionWrapper {
 			logger.trace("Optimized query model:\n{}", tupleExpr);
 
 			try {
+				logger.trace("Evaluation strategy: {}", strategy);
 				return strategy.evaluate(tupleExpr, bindings);
 			}
 			catch (QueryEvaluationException e) {

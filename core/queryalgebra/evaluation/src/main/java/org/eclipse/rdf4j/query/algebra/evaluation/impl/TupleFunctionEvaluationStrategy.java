@@ -26,6 +26,8 @@ import org.eclipse.rdf4j.query.algebra.evaluation.TripleSource;
 import org.eclipse.rdf4j.query.algebra.evaluation.federation.FederatedServiceResolver;
 import org.eclipse.rdf4j.query.algebra.evaluation.function.TupleFunction;
 import org.eclipse.rdf4j.query.algebra.evaluation.function.TupleFunctionRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An {@link EvaluationStrategy} that has support for {@link TupleFunction}s.
@@ -33,6 +35,8 @@ import org.eclipse.rdf4j.query.algebra.evaluation.function.TupleFunctionRegistry
 public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 
 	private final TupleFunctionRegistry tupleFuncRegistry;
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	public TupleFunctionEvaluationStrategy(TripleSource tripleSource, Dataset dataset,
 			FederatedServiceResolver serviceResolver)
@@ -52,6 +56,8 @@ public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 			BindingSet bindings)
 		throws QueryEvaluationException
 	{
+		log.debug("Instance of TupleExpr: {}", expr.getClass());
+		log.debug("Is instance of TupleFunctionCall: {}", expr instanceof TupleFunctionCall);
 		if (expr instanceof TupleFunctionCall) {
 			return evaluate((TupleFunctionCall)expr, bindings);
 		}

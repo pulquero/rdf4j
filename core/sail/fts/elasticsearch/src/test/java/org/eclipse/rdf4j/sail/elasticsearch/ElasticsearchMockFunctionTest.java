@@ -13,6 +13,8 @@ import org.eclipse.rdf4j.sail.lucene.AbstractMockFunctionTest;
 import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.After;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author github.com:jgrzebyta
@@ -22,6 +24,8 @@ public class ElasticsearchMockFunctionTest extends AbstractMockFunctionTest {
 	private static final String DATA_DIR = "target/test-data";
 
 	private static final String DATA = "org/eclipse/rdf4j/sail/yeastract_raw.ttl";
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@After
 	public void tearDown()

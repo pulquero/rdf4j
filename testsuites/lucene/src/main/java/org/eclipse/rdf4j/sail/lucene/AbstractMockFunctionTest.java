@@ -46,13 +46,12 @@ public abstract class AbstractMockFunctionTest {
 
 	private RepositoryConnection connection;
 
-	protected Logger log;
+	private static Logger log = LoggerFactory.getLogger(AbstractMockFunctionTest.class);
 
 	@Before
 	public void setUp()
 		throws Exception
 	{
-		log = LoggerFactory.getLogger(this.getClass());
 		// load data into memory store
 		MemoryStore store = new MemoryStore();
 
@@ -96,6 +95,7 @@ public abstract class AbstractMockFunctionTest {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void testSimpleCase()
 		throws Exception
 	{
@@ -113,6 +113,7 @@ public abstract class AbstractMockFunctionTest {
 				Assert.assertTrue(count > 0);
 				log.info("**** Number of results: {}", count);
 			}
+			log.debug("query: \n{}", query);
 			printTupleResult(query);
 		}
 		catch (Exception e) {
@@ -175,7 +176,6 @@ public abstract class AbstractMockFunctionTest {
 	}
 
 	@Test
-	@Ignore
 	public void testMultipleReturn2()
 		throws Exception
 	{
@@ -194,7 +194,7 @@ public abstract class AbstractMockFunctionTest {
 				log.info("Number of results: {}", count);
 			}
 			// logging
-			printTupleResult(query);
+			//printTupleResult(query);
 		}
 		catch (Exception e) {
 			connection.rollback();

@@ -12,12 +12,16 @@ import org.eclipse.rdf4j.sail.lucene.AbstractLuceneSailSPARQLTest;
 import org.eclipse.rdf4j.sail.lucene.LuceneSail;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.After;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ElasticsearchSailSPARQLTest extends AbstractLuceneSailSPARQLTest {
 
 	private static final String DATA_DIR = "target/test-data";
 
 	private static final String DATA = "org/eclipse/rdf4j/sail/yeastract_raw.ttl";
+
+	private Logger log = LoggerFactory.getLogger(ElasticsearchSailSPARQLTest.class);
 
 	@After
 	public void tearDown()
