@@ -41,8 +41,7 @@ public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 	}
 
 	public TupleFunctionEvaluationStrategy(TripleSource tripleSource, Dataset dataset,
-			FederatedServiceResolver serviceResolver,
-			TupleFunctionRegistry tupleFuncRegistry)
+			FederatedServiceResolver serviceResolver, TupleFunctionRegistry tupleFuncRegistry)
 	{
 		super(tripleSource, dataset, serviceResolver);
 		this.tupleFuncRegistry = tupleFuncRegistry;
@@ -111,23 +110,15 @@ public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 						if ((varValue == null || result.equals(varValue))
 								&& (boundValue == null || result.equals(boundValue)))
 						{
-							resultBindings.addBinding(varName, result);
+							if (boundValue == null) { // if not already present
+								resultBindings.addBinding(varName, result);
+							}
 						}
 						else {
 							resultBindings = null;
 							break;
 						}
 					}
-
-					/*
-					 * for (int i = 0; i < values.size(); i++) { Value result = values.get(i); Var resultVar =
-					 * resultVars.get(i); Value varValue = resultVar.getValue(); String varName =
-					 * resultVar.getName(); Value boundValue = bindings.getValue(varName); if ((varValue ==
-					 * null || result.equals(varValue)) && (boundValue == null || result.equals(boundValue)))
-					 * { resultBindings.addBinding(varName, result); } else { resultBindings = null; break; }
-					 * }
-					 */
-
 				}
 				return resultBindings;
 			}
@@ -136,7 +127,12 @@ public class TupleFunctionEvaluationStrategy extends SimpleEvaluationStrategy {
 			protected void handleClose()
 				throws QueryEvaluationException
 			{
-				iter.close();
+				try {
+					super.handleClose();
+				}
+				finally {
+					iter.close();
+				}
 			}
 		};
 	}
