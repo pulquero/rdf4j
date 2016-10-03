@@ -257,7 +257,12 @@ public class LuceneSail extends NotifyingSailWrapper {
 	public static final String INCOMPLETE_QUERY_FAIL_KEY = "incompletequeryfail";
 
 	/**
-	 * Set this key to "false" to disable late evaluation of search queries.
+	 * Set this key to "eager" to disable late evaluation of search queries. Can be one of "tripleSource" (the
+	 * base SAIL is treated as a simple triple source and all the query evaluation is performed by this SAIL),
+	 * "service" (uses the base SAIL along with an embedded SERVICE to perform query evaluation. The SERVICE
+	 * is used to evaluate extended query algebra nodes such as {@link TupleFunction}s), "native" (assumes the
+	 * base SAIL supports {@link TupleFunction}s and uses it to perform all query evaluation), "eager" (search
+	 * queries are performed first before other query evaluation). Default is "tripleSource".
 	 */
 	public static final String EVALUATION_MODE_KEY = "evaluationMode";
 
@@ -383,13 +388,16 @@ public class LuceneSail extends NotifyingSailWrapper {
 		}
 
 		try {
-			if (parameters.containsKey(REINDEX_QUERY_KEY))
+			if (parameters.containsKey(REINDEX_QUERY_KEY)) {
 				setReindexQuery(parameters.getProperty(REINDEX_QUERY_KEY));
-			if (parameters.containsKey(INCOMPLETE_QUERY_FAIL_KEY))
+			}
+			if (parameters.containsKey(INCOMPLETE_QUERY_FAIL_KEY)) {
 				setIncompleteQueryFails(
 						Boolean.parseBoolean(parameters.getProperty(INCOMPLETE_QUERY_FAIL_KEY)));
-			if (parameters.containsKey(EVALUATION_MODE_KEY))
+			}
+			if (parameters.containsKey(EVALUATION_MODE_KEY)) {
 				setEvaluationMode(parameters.getProperty(EVALUATION_MODE_KEY));
+			}
 			if (luceneIndex == null) {
 				initializeLuceneIndex();
 			}
