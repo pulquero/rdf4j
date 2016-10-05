@@ -23,8 +23,12 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.algebra.evaluation.function.TupleFunction;
 import org.eclipse.rdf4j.sail.SailException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QueryTupleFunction implements TupleFunction {
+
+	private static Logger log = LoggerFactory.getLogger(QueryTupleFunction.class);
 
 	@Override
 	public String getURI() {
@@ -36,6 +40,7 @@ public class QueryTupleFunction implements TupleFunction {
 			ValueFactory valueFactory, Value... args)
 		throws QueryEvaluationException
 	{
+		log.debug("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 		int i = 0;
 
 		String queryString = ((Literal)args[i++]).getLabel();

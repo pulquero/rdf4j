@@ -324,12 +324,16 @@ public class LuceneSailConnection extends NotifyingSailConnectionWrapper {
 		// use externally bound variables
 		new BindingAssigner().optimize(tupleExpr, dataset, bindings);
 
+		/*
+		 * TODO it seems that cause the error related with issue #220: As it was said the processing of
+		 * 'search' queries is done before the processing of other parts of the SPARQL request.
+		 */
 		List<SearchQueryEvaluator> queries = new ArrayList<SearchQueryEvaluator>();
-
 		for (SearchQueryInterpreter interpreter : sail.getSearchQueryInterpreters()) {
 			interpreter.process(tupleExpr, bindings, queries);
 		}
 
+		logger.trace("Evaluation mode: {}", sail.getEvaluationMode());
 		if (LuceneSail.EAGER_EVALUATION_MODE.equals(sail.getEvaluationMode())) {
 			// evaluate lucene queries
 			if (!queries.isEmpty()) {
@@ -364,6 +368,7 @@ public class LuceneSailConnection extends NotifyingSailConnectionWrapper {
 			logger.trace("Optimized query model:\n{}", tupleExpr);
 
 			try {
+				logger.trace("Evaluation strategy: {}", strategy);
 				return strategy.evaluate(tupleExpr, bindings);
 			}
 			catch (QueryEvaluationException e) {
